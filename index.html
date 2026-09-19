@@ -1096,6 +1096,22 @@
             }, { threshold: 0.5 });
             typewriterEls.forEach(el => twObserver.observe(el));
         }
+
+        // Images (some quite large) finish loading after ScrollTrigger's initial
+        // calculation, which shifts page height and makes trigger positions for
+        // lower sections stale. Recompute once everything (incl. images) has loaded.
+        window.addEventListener('load', () => {
+            ScrollTrigger.refresh();
+        });
+
+        // Safety net: if any entrance animation somehow never triggers (very
+        // slow network, blocked resource, etc.), make sure nothing stays
+        // permanently invisible.
+        setTimeout(() => {
+            document.querySelectorAll('[style*="opacity: 0"], [style*="opacity:0"]').forEach(el => {
+                gsap.to(el, { opacity: 1, y: 0, duration: 0.6 });
+            });
+        }, 4000);
     </script>
 </body>
 </html>
